@@ -5,8 +5,10 @@ import pandas as pd
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import mean_squared_error, mean_absolute_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error, root_mean_squared_error, r2_score
 import matplotlib.pyplot as plt
+
+from updatecsv import update_to_csv
 
 # Step 1: Fetch data from Yahoo Finance
 def fetch_stock_data(ticker, start_date, end_date):
@@ -48,8 +50,12 @@ def train_knn_model(X, y, n_neighbors=5):
 def evaluate_model(y_test, y_pred):
     mse = mean_squared_error(y_test, y_pred)
     mae = mean_absolute_error(y_test, y_pred)
-    print(f"Mean Squared Error (MSE): {mse}")
-    print(f"Mean Absolute Error (MAE): {mae}")
+    rmse = root_mean_squared_error(y_test, y_pred)
+    mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100
+    r2 = r2_score(y_test, y_pred)
+    #print(f"Mean Squared Error (MSE): {mse}")
+    #print(f"Mean Absolute Error (MAE): {mae}")
+    update_to_csv("KNN",mae,mape, mse, rmse, r2)
 
 # Step 5: Predict future prices
 def predict_future_prices(model, scaler, last_known_data, last_date, days=90):

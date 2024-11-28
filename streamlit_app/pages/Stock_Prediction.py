@@ -29,20 +29,20 @@ stock_dict = fetch_stocks()
 
 # Add a dropdown for selecting the stock
 st.sidebar.markdown("### **Select stock**")
-stock = st.sidebar.selectbox("Choose a stock", list(stock_dict.keys()))
+stock_ticker = st.sidebar.selectbox("Choose a stock", list(stock_dict.keys()))
 
 # Add a selector for stock exchange
-st.sidebar.markdown("### **Select stock exchange**")
-stock_exchange = st.sidebar.radio("Choose a stock exchange", ("BSE", "NSE"), index=0)
+# st.sidebar.markdown("### **Select stock exchange**")
+# stock_exchange = st.sidebar.radio("Choose a stock exchange", ("BSE", "NSE"), index=0)
 
-# Build the stock ticker
-stock_ticker = f"{stock_dict[stock]}.{'BO' if stock_exchange == 'BSE' else 'NS'}"
+# # Build the stock ticker
+# stock_ticker = f"{stock_dict[stock]}.{'BO' if stock_exchange == 'BSE' else 'NS'}"
 
 # Add a disabled input for stock ticker
-st.sidebar.markdown("### **Stock ticker**")
-st.sidebar.text_input(
-    label="Stock ticker code", placeholder=stock_ticker, disabled=True
-)
+# st.sidebar.markdown("### **Stock ticker**")
+# st.sidebar.text_input(
+#     label="Stock ticker code", placeholder=stock_ticker, disabled=True
+# )
 
 # Fetch and store periods and intervals
 periods = fetch_periods_intervals()
@@ -655,7 +655,7 @@ if model == 8:
     plt.close(fig)
 
 if model == 3 :    
-    train_index, test_index, X_train, X_test, y_train, y_test, y_pred, future_dates, future_forecast, mse, mae, r2 = gen_dt(stock_ticker)
+    train_index, test_index, X_train, X_test, y_train, y_test, y_pred, future_dates, future_forecast, mse, mae, r2 = get_dt(stock_ticker)
 
     # Check if the data is not None
     if X_train is not None and (future_forecast >= 0).all() and (y_pred >= 0).all():

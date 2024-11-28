@@ -3,6 +3,7 @@ import streamlit as st
 
 # Import helper functions
 from helper import *
+from randomforest import update_to_csv
 
 # Configure the page
 st.set_page_config(
@@ -21,25 +22,25 @@ stock_dict = fetch_stocks()
 st.sidebar.markdown("### **Select stock**")
 stock = st.sidebar.selectbox("Choose a stock", list(stock_dict.keys()))
 
-# Add a selector for stock exchange
-st.sidebar.markdown("### **Select stock exchange**")
-stock_exchange = st.sidebar.radio("Choose a stock exchange", ("BSE", "NSE"), index=0)
+# # Add a selector for stock exchange
+# st.sidebar.markdown("### **Select stock exchange**")
+# stock_exchange = st.sidebar.radio("Choose a stock exchange", ("BSE", "NSE"), index=0)
 
-# Build the stock ticker
-stock_ticker = f"{stock_dict[stock]}.{'BO' if stock_exchange == 'BSE' else 'NS'}"
+# # Build the stock ticker
+# stock_ticker = f"{stock_dict[stock]}.{'BO' if stock_exchange == 'BSE' else 'NS'}"
 
-# Add a disabled input for stock ticker
-st.sidebar.markdown("### **Stock ticker**")
-st.sidebar.text_input(
-    label="Stock ticker code", placeholder=stock_ticker, disabled=True
-)
+# # Add a disabled input for stock ticker
+# st.sidebar.markdown("### **Stock ticker**")
+# st.sidebar.text_input(
+#     label="Stock ticker code", placeholder=stock_ticker, disabled=True
+# )
 
 #####Sidebar End#####
 
 
 # Fetch the info of the stock
 try:
-    stock_data_info = fetch_stock_info(stock_ticker)
+    stock_data_info = fetch_stock_info(stock)
 except:
     st.error("Error: Unable to fetch the stock data. Please try again later.")
     st.stop()
@@ -71,7 +72,7 @@ col1.dataframe(
     width=500,
 )
 col2.dataframe(
-    pd.DataFrame({"Symbol": [stock_ticker]}),
+    pd.DataFrame({"Symbol": [stock]}),
     hide_index=True,
     width=500,
 )
@@ -82,7 +83,7 @@ col1.dataframe(
     hide_index=True,
     width=500,
 )
-col2.dataframe(pd.DataFrame({"Exchange": [stock_exchange]}), hide_index=True, width=500)
+#col2.dataframe(pd.DataFrame({"Exchange": [stock_exchange]}), hide_index=True, width=500)
 
 #####Basic Information End#####
 

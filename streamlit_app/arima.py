@@ -4,8 +4,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import timedelta
 from pmdarima import auto_arima
-from sklearn.metrics import mean_squared_error, mean_absolute_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error, root_mean_squared_error, r2_score
 import warnings
+
+from updatecsv import update_to_csv
 warnings.filterwarnings('ignore')
 
 # Step 1: Fetch data from Yahoo Finance
@@ -51,14 +53,15 @@ def predict_future_prices(model, last_date, days=90, alpha=0.05):
     return future_dates, forecast, conf_int
 
 # Step 6: Evaluate model performance
-def evaluate_model(actual, predictions):
-    mse = mean_squared_error(actual, predictions)
-    mae = mean_absolute_error(actual, predictions)
-    rmse = np.sqrt(mse)
-    print(f"\nModel Performance Metrics:")
-    print(f"Mean Squared Error (MSE): {mse:.2f}")
-    print(f"Mean Absolute Error (MAE): {mae:.2f}")
-    print(f"Root Mean Squared Error (RMSE): {rmse:.2f}")
+def evaluate_model(y_test, y_pred):
+    mse = mean_squared_error(y_test, y_pred)
+    mae = mean_absolute_error(y_test, y_pred)
+    rmse = root_mean_squared_error(y_test, y_pred)
+    mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100
+    r2 = r2_score(y_test, y_pred)
+    #print(f"Mean Squared Error (MSE): {mse}")
+    #print(f"Mean Absolute Error (MAE): {mae}")
+    update_to_csv("ARIMA",mae,mape, mse, rmse, r2)
 
 # Example usage
 #if __name__ == "__main__":

@@ -1,5 +1,5 @@
 from datetime import timedelta
-from sklearn.base import r2_score
+from sklearn.metrics import r2_score
 from sklearn.discriminant_analysis import StandardScaler
 import yfinance as yf
 import numpy as np
@@ -10,7 +10,11 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error, root_mean_squared_error
 import matplotlib.pyplot as plt
 
-from helper import update_to_csv
+#from helper import update_to_csv
+
+import pandas as pd
+
+from updatecsv import update_to_csv
 
 # Step 1: Fetch data from Yahoo Finance
 def fetch_stock_data(ticker, start_date, end_date):
@@ -53,7 +57,7 @@ def train_random_forest_model(X, y):
 def evaluate_model(y_test, y_pred):
     mse = mean_squared_error(y_test, y_pred)
     mae = mean_absolute_error(y_test, y_pred)
-    rmse = root_mean_squared_error(y_test, y_pred, squared=False)
+    rmse = root_mean_squared_error(y_test, y_pred)
     mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100
     r2 = r2_score(y_test, y_pred)
     #print(f"Mean Squared Error (MSE): {mse}")

@@ -3,9 +3,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, mean_absolute_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.preprocessing import MinMaxScaler
 import xgboost as xgb
+
+from updatecsv import update_to_csv
 
 # Step 1: Fetch data from Yahoo Finance
 def fetch_stock_data(ticker, start_date, end_date):
@@ -145,13 +147,8 @@ def evaluate_model(actual, predictions, price_scaler):
     mae = mean_absolute_error(actual_original, predictions_original)
     rmse = np.sqrt(mse)
     mape = np.mean(np.abs((actual_original - predictions_original) / actual_original)) * 100
-    
-    print("\nModel Performance Metrics:")
-    print(f"Mean Squared Error (MSE): {mse:.2f}")
-    print(f"Mean Absolute Error (MAE): {mae:.2f}")
-    print(f"Root Mean Squared Error (RMSE): {rmse:.2f}")
-    print(f"Mean Absolute Percentage Error (MAPE): {mape:.2f}%")
-    
+    r2 = r2_score(actual_original, predictions_original)
+    update_to_csv("XG Boost",mae,mape, mse, rmse, r2)
     return mse, mae, rmse, mape
 
 # Step 7: Forecast future prices
