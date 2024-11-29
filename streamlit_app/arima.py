@@ -53,7 +53,7 @@ def predict_future_prices(model, last_date, days=90, alpha=0.05):
     return future_dates, forecast, conf_int
 
 # Step 6: Evaluate model performance
-def evaluate_model(y_test, y_pred):
+def evaluate_model(y_test, y_pred, ticker):
     mse = mean_squared_error(y_test, y_pred)
     mae = mean_absolute_error(y_test, y_pred)
     rmse = root_mean_squared_error(y_test, y_pred)
@@ -61,7 +61,7 @@ def evaluate_model(y_test, y_pred):
     r2 = r2_score(y_test, y_pred)
     #print(f"Mean Squared Error (MSE): {mse}")
     #print(f"Mean Absolute Error (MAE): {mae}")
-    update_to_csv("ARIMA",mae,mape, mse, rmse, r2)
+    update_to_csv("D:/SAMLFRFM/notebooks/metrics/arima.csv",ticker, mae,mape, mse, rmse, r2)
 
 # Example usage
 #if __name__ == "__main__":
@@ -84,7 +84,7 @@ def get_arima(ticker):
     test_predictions, test_conf_int = make_predictions(model, len(test_data))
     
     # Evaluate model
-    evaluate_model(test_data, test_predictions)
+    evaluate_model(test_data, test_predictions, ticker)
     
     # Predict future prices with confidence intervals
     #print("\nPredicting future prices...")

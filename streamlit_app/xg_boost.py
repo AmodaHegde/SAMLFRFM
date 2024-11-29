@@ -126,7 +126,7 @@ def make_predictions(model, X_test):
     return predictions
 
 # Step 6: Evaluate model performance
-def evaluate_model(actual, predictions, price_scaler):
+def evaluate_model(actual, predictions, price_scaler, ticker):
     """
     Evaluate model performance
     
@@ -148,7 +148,7 @@ def evaluate_model(actual, predictions, price_scaler):
     rmse = np.sqrt(mse)
     mape = np.mean(np.abs((actual_original - predictions_original) / actual_original)) * 100
     r2 = r2_score(actual_original, predictions_original)
-    update_to_csv("XG Boost",mae,mape, mse, rmse, r2)
+    update_to_csv("D:/SAMLFRFM/notebooks/metrics/xgboost.csv",ticker, mae,mape, mse, rmse, r2)
     return mse, mae, rmse, mape
 
 # Step 7: Forecast future prices
@@ -267,7 +267,7 @@ def get_xgboost(ticker):
     test_predictions = make_predictions(model, X_test)
     
     # Evaluate model
-    evaluate_model(y_test, test_predictions, price_scaler)
+    evaluate_model(y_test, test_predictions, price_scaler, ticker)
     
     # Predict future prices
     print("\nPredicting future prices...")

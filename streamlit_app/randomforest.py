@@ -54,7 +54,7 @@ def train_random_forest_model(X, y):
     return model, X_train, X_test, y_train, y_test, y_pred
 
 # Step 4: Evaluate model performance
-def evaluate_model(y_test, y_pred):
+def evaluate_model(y_test, y_pred, ticker):
     mse = mean_squared_error(y_test, y_pred)
     mae = mean_absolute_error(y_test, y_pred)
     rmse = root_mean_squared_error(y_test, y_pred)
@@ -62,7 +62,7 @@ def evaluate_model(y_test, y_pred):
     r2 = r2_score(y_test, y_pred)
     #print(f"Mean Squared Error (MSE): {mse}")
     #print(f"Mean Absolute Error (MAE): {mae}")
-    update_to_csv("Random Forest",mae,mape, mse, rmse, r2)
+    update_to_csv("D:/SAMLFRFM/notebooks/metrics/rf.csv",ticker, mae,mape, mse, rmse, r2)
 
 # Step 5: Predict future prices
 def predict_future_prices(model, last_known_data, last_date, days=90):
@@ -115,7 +115,7 @@ def get_randomforest(ticker):
     stock_data = fetch_stock_data(ticker, start_date, end_date)
     features, targets = prepare_data(stock_data, lag=5)
     model, X_train, X_test, y_train, y_test, y_pred = train_random_forest_model(features, targets)
-    evaluate_model(y_test, y_pred)
+    evaluate_model(y_test, y_pred, ticker)
     
     # Predict future prices
     last_known_data = features[-1]  # Last feature set

@@ -36,7 +36,7 @@ def train_decision_tree_model(X, y):
     return model, X_train, X_test, y_train, y_test, y_pred, scaler
 
 # Step 4: Evaluate model performance
-def evaluate_model(y_test, y_pred):
+def evaluate_model(y_test, y_pred, ticker):
     mse = mean_squared_error(y_test, y_pred)
     mae = mean_absolute_error(y_test, y_pred)
     rmse = root_mean_squared_error(y_test, y_pred)
@@ -44,7 +44,7 @@ def evaluate_model(y_test, y_pred):
     r2 = r2_score(y_test, y_pred)
     #print(f"Mean Squared Error (MSE): {mse}")
     #print(f"Mean Absolute Error (MAE): {mae}")
-    update_to_csv("Decision Tree",mae,mape, mse, rmse, r2)
+    update_to_csv("D:/SAMLFRFM/notebooks/metrics/dt.csv",ticker, mae,mape, mse, rmse, r2)
 
 # Step 5: Predict future prices
 def predict_future_prices(model, scaler, last_date, days=90):
@@ -64,7 +64,7 @@ def get_dt(ticker):
     stock_data = fetch_stock_data(ticker, start_date, end_date)
     features, targets = prepare_data(stock_data)
     model, X_train, X_test, y_train, y_test, y_pred, scaler = train_decision_tree_model(features, targets)
-    evaluate_model(y_test, y_pred)
+    evaluate_model(y_test, y_pred, ticker)
     
     # Predict future prices
     last_date = stock_data.index[-1].to_pydatetime().replace(tzinfo=None)

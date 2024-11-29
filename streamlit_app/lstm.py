@@ -53,7 +53,7 @@ def train_lstm_model(X, y):
 
 # Step 4: Evaluate model performance
     
-def evaluate_model(y_test, y_pred, scaler):
+def evaluate_model(y_test, y_pred, scaler, ticker):
     y_test = scaler.inverse_transform(y_test.reshape(-1, 1))
     y_pred = scaler.inverse_transform(y_pred)
     mse = mean_squared_error(y_test, y_pred)
@@ -63,7 +63,7 @@ def evaluate_model(y_test, y_pred, scaler):
     r2 = r2_score(y_test, y_pred)
     #print(f"Mean Squared Error (MSE): {mse}")
     #print(f"Mean Absolute Error (MAE): {mae}")
-    update_to_csv("LSTM",mae,mape, mse, rmse, r2)
+    update_to_csv("D:/SAMLFRFM/notebooks/metrics/lstm.csv",ticker,mae,mape, mse, rmse, r2)
 
 # Step 5: Predict future prices
 def predict_future_prices(model, last_known_data, last_date, scaler, lag=5, days=90):
@@ -122,7 +122,7 @@ def get_lstm(ticker):
     X, y, scaler = prepare_data(stock_data, lag=5)
     
     model, X_train, X_test, y_train, y_test, y_pred = train_lstm_model(X, y)
-    evaluate_model(y_test, y_pred, scaler)
+    evaluate_model(y_test, y_pred, scaler, ticker)
     
     # Predict future prices
     last_known_data = X[-1]  # Last feature set

@@ -48,7 +48,7 @@ def train_gru_model(X, y):
     return model, X_train, X_test, y_train, y_test, y_pred
 
 # Step 4: Evaluate model performance with proper inverse scaling
-def evaluate_model(y_test, y_pred, scaler):
+def evaluate_model(y_test, y_pred, scaler, ticker):
     y_test = scaler.inverse_transform(y_test.reshape(-1, 1))
     y_pred = scaler.inverse_transform(y_pred)
     mse = mean_squared_error(y_test, y_pred)
@@ -58,7 +58,7 @@ def evaluate_model(y_test, y_pred, scaler):
     r2 = r2_score(y_test, y_pred)
     #print(f"Mean Squared Error (MSE): {mse}")
     #print(f"Mean Absolute Error (MAE): {mae}")
-    update_to_csv("GRU",mae,mape, mse, rmse, r2)
+    update_to_csv("D:/SAMLFRFM/notebooks/metrics/gru.csv",ticker, mae,mape, mse, rmse, r2)
     return y_test, y_pred
 
 # Step 5: Predict future prices
@@ -97,7 +97,7 @@ def get_gru(ticker):
     features = features.reshape(features.shape[0], features.shape[1], 1)
     
     model, X_train, X_test, y_train, y_test, y_pred = train_gru_model(features, targets)
-    y_test_original, y_pred_original = evaluate_model(y_test, y_pred, scaler)
+    y_test_original, y_pred_original = evaluate_model(y_test, y_pred, scaler, ticker)
     
     # Predict future prices
     last_known_data = stock_data['Close'].values[-5:]  # Last 5 known prices

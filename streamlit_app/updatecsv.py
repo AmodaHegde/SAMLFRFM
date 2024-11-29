@@ -1,26 +1,26 @@
 import pandas as pd
 
-def update_to_csv(model_name, mae, mape, mse, rmse, r2):
-    file = "D:/SAMLFRFM/notebooks/model_metrics.csv"
+def update_to_csv(file, ticker, mae, mape, mse, rmse, r2):
+    #file = "D:/SAMLFRFM/notebooks/model_metrics.csv"
     
     # Read the existing metrics
     existing_metrics = pd.read_csv(file)
     
     # Check if the model exists
-    model_exists = existing_metrics["Model"].str.contains(model_name).any()
+    stock_exists = existing_metrics["Stock"].str.contains(ticker).any()
     
-    if model_exists:
+    if stock_exists:
         # Get the row corresponding to the model
-        previous_metrics = existing_metrics[existing_metrics["Model"] == model_name].iloc[0]
+        previous_metrics = existing_metrics[existing_metrics["Stock"] == ticker].iloc[0]
         
         # Check if the RMSE is better
         if rmse < previous_metrics["RMSE"]:
             # Remove the old row
-            existing_metrics = existing_metrics[existing_metrics["Model"] != model_name]
+            existing_metrics = existing_metrics[existing_metrics["Stock"] != ticker]
             
             # Prepare new metrics row
             new_metrics = pd.DataFrame({
-                "Model": [model_name],
+                "Stock": [ticker],
                 "MAE": [mae],
                 "MAPE": [mape],
                 "MSE": [mse],
@@ -36,7 +36,7 @@ def update_to_csv(model_name, mae, mape, mse, rmse, r2):
     else:
         # If the model does not exist, add a new row
         new_metrics = pd.DataFrame({
-            "Model": [model_name],
+            "Stock": [ticker],
             "MAE": [mae],
             "MAPE": [mape],
             "MSE": [mse],
