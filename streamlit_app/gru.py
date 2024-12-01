@@ -1,3 +1,4 @@
+#import libraries
 from datetime import timedelta
 import yfinance as yf
 import numpy as np
@@ -5,8 +6,6 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, root_mean_squared_error, r2_score
-import matplotlib.pyplot as plt
-import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, GRU
 
@@ -56,9 +55,9 @@ def evaluate_model(y_test, y_pred, scaler, ticker):
     rmse = root_mean_squared_error(y_test, y_pred)
     mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100
     r2 = r2_score(y_test, y_pred)
-    #print(f"Mean Squared Error (MSE): {mse}")
-    #print(f"Mean Absolute Error (MAE): {mae}")
+
     update_to_csv("D:/SAMLFRFM/notebooks/metrics/gru.csv",ticker, mae,mape, mse, rmse, r2)
+    
     return y_test, y_pred
 
 # Step 5: Predict future prices
@@ -81,12 +80,9 @@ def predict_future_prices(model, last_known_data, last_date, scaler, days=90):
     future_dates = [last_date + timedelta(days=i) for i in range(1, days + 1)]
     return future_dates, future_prices
 
-
-
-# Example usage
-#if __name__ == "__main__":
+#runner function
 def get_gru(ticker):
-    #ticker = 'TSLA'  # Example stock ticker
+    
     start_date = '2020-01-01'
     end_date = '2024-11-25'
     
@@ -103,13 +99,5 @@ def get_gru(ticker):
     last_known_data = stock_data['Close'].values[-5:]  # Last 5 known prices
     last_date = stock_data.index[-1].to_pydatetime().replace(tzinfo=None)
     future_dates, future_prices = predict_future_prices(model, last_known_data,last_date, scaler, days=90)
-    
-    # Plot results
-    #plot_results1(y_test_original, y_pred_original)
-    #plot_results2(future_dates, future_prices)
-    
-    # Print future prices
-    print(future_dates[2:6], future_prices[2:6])
-    print(f"The predicted stock price for {future_dates[-1].strftime('%Y-%m-%d')} is ${future_prices[-1]:.2f}")
     
     return stock_data, y_test_original, y_pred_original, future_dates, future_prices

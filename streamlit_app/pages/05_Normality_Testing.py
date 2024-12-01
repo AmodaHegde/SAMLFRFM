@@ -1,9 +1,11 @@
+#imports
+
 import streamlit as st
 import pandas as pd
 from scipy.stats import shapiro
 
 # Title
-st.title("Step 1: Testing Normality")
+st.title("Testing Normality")
 st.write("## Shapiro-Wilk Test for Normality Across Multiple Models")
 
 # File paths and corresponding model names
@@ -20,7 +22,7 @@ files_and_names = {
 
 # Iterate over all files with friendly names
 for model_name, file_path in files_and_names.items():
-    st.write(f"## Model: {model_name}")  # Display friendly name
+    st.write(f"## Model: {model_name}")  # Display name
 
     try:
         # Load data

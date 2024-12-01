@@ -5,10 +5,21 @@ st.set_page_config(
 )
 
 st.markdown(
-    """# 📈 **Stockastic**
-### **Predicting Stocks with ML**
+    """# 📈 **Statistical Examination of Machine Learning Algorithms for Risk Management in Financial Markets**
 
-**Stockastic is an ML-powered stock price prediction app built with Python and Streamlit. It utilizes machine learning models to forecast stock prices and help investors make data-driven decisions.**
-**This is not financial advice! Use forecast data to inform your own investment research. No guarantee of trading performance.**
+
+**ML-powered stock price prediction and statistical comparison app built with Python and Streamlit. It utilizes machine learning models to forecast stock prices and help investors make data-driven decisions.**
+
+
+## **Developed By:** ##
+
+
+**Guide: Dr. Prakasha S**
+
+
+**Students: Amoda Hegde, Dhruthi S, Ghanavi Arun, Gowri KS** 
+
+*Dept. Of ISE, RNSIT*   
+
 """
 )

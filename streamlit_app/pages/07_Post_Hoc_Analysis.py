@@ -1,3 +1,4 @@
+#imports
 import pandas as pd
 import streamlit as st
 from statsmodels.stats.multicomp import pairwise_tukeyhsd
@@ -56,9 +57,6 @@ else:
             groups=combined_data["Model"],
             alpha=0.05
         )
-
-        # Display Tukey's HSD Summary
-        #st.write(tukey_result.summary())
 
         # Visualization: Mean Differences
         st.header("Tukey's HSD Plot")

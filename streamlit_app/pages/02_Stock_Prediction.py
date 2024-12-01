@@ -1,8 +1,9 @@
 # Imports
+from matplotlib import pyplot as plt
 import plotly.graph_objects as go
 import streamlit as st
 
-# Import helper functions
+# Import functions
 from helper import *
 from randomforest import get_randomforest
 from svm import get_svm
@@ -19,7 +20,7 @@ st.set_page_config(
 )
 
 
-#####Sidebar Start#####
+#Sidebar Start
 
 # Add a sidebar
 st.sidebar.markdown("## **User Input Features**")
@@ -30,19 +31,6 @@ stock_dict = fetch_stocks()
 # Add a dropdown for selecting the stock
 st.sidebar.markdown("### **Select stock**")
 stock_ticker = st.sidebar.selectbox("Choose a stock", list(stock_dict.keys()))
-
-# Add a selector for stock exchange
-# st.sidebar.markdown("### **Select stock exchange**")
-# stock_exchange = st.sidebar.radio("Choose a stock exchange", ("BSE", "NSE"), index=0)
-
-# # Build the stock ticker
-# stock_ticker = f"{stock_dict[stock]}.{'BO' if stock_exchange == 'BSE' else 'NS'}"
-
-# Add a disabled input for stock ticker
-# st.sidebar.markdown("### **Stock ticker**")
-# st.sidebar.text_input(
-#     label="Stock ticker code", placeholder=stock_ticker, disabled=True
-# )
 
 # Fetch and store periods and intervals
 periods = fetch_periods_intervals()
@@ -62,25 +50,19 @@ st.sidebar.markdown("### **Select model**")
 model_name = st.sidebar.selectbox("Choose a model", list(models.keys()))
 model = models[model_name]
 
-#####Sidebar End#####
+#Sidebar End
 
-
-#####Title#####
+#Title
 
 # Add title to the app
 st.markdown("# **Stock Price Prediction**")
 
-# Add a subtitle to the app
-st.markdown("##### **Enhance Investment Decisions through Data-Driven Forecasting**")
-
-#####Title End#####
-
+#Title End
 
 # Fetch the stock historical data
 stock_data = fetch_stock_history(stock_ticker, period, interval)
 
-
-#####Historical Data Graph#####
+#Historical Data Graph
 
 # Add a title to the historical data graph
 st.markdown("## **Historical Data**")
@@ -104,245 +86,214 @@ fig.update_layout(xaxis_rangeslider_visible=False)
 # Use the native streamlit theme.
 st.plotly_chart(fig, use_container_width=True)
 
-#####Historical Data Graph End#####
+#Historical Data Graph End
 
 
-#####Stock Prediction Graph#####
-
-# Unpack the data
-if model == 9:    
-    train_df, test_df, forecast, predictions = generate_stock_prediction1(stock_ticker)
-
-    # Check if the data is not None
-    if train_df is not None and (forecast >= 0).all() and (predictions >= 0).all():
-        # Add a title to the stock prediction graph
-        st.markdown("## **Stock Prediction**")
-
-        # Create a plot for the stock prediction
-        fig = go.Figure(
-            data=[
-                go.Scatter(
-                    x=train_df.index,
-                    y=train_df["Close"],
-                    name="Train",
-                    mode="lines",
-                    line=dict(color="blue"),
-                ),
-                go.Scatter(
-                    x=test_df.index,
-                    y=test_df["Close"],
-                    name="Test",
-                    mode="lines",
-                    line=dict(color="orange"),
-                ),
-                go.Scatter(
-                    x=forecast.index,
-                    y=forecast,
-                    name="Forecast",
-                    mode="lines",
-                    line=dict(color="red"),
-                ),
-                go.Scatter(
-                    x=test_df.index,
-                    y=predictions,
-                    name="Test Predictions",
-                    mode="lines",
-                    line=dict(color="green"),
-                ),
-            ]
-        )
-
-        # Customize the stock prediction graph
-        fig.update_layout(xaxis_rangeslider_visible=False)
-
-        # Use the native streamlit theme.
-        st.plotly_chart(fig, use_container_width=True)
-
-    # If the data is None
-    else:
-        # Add a title to the stock prediction graph
-        st.markdown("## **Stock Prediction**")
-
-        # Add a message to the stock prediction graph
-        st.markdown("### **No data available for the selected stock**")
-
-    #####Stock Prediction Graph End#####
-    
-# if model == 1 :    
-#     train_df, test_df, X_train, X_test, y_train, y_test, y_pred, future_dates, future_forecast, mse, mae, r2 = generate_stock_prediction2(stock_ticker)
-
-#     # Check if the data is not None
-#     if X_train is not None and (future_forecast >= 0).all() and (y_pred >= 0).all():
-#         # Add a title to the stock prediction graph
-#         st.markdown("## **Stock Prediction**")
-#         # Plot results
-#         plt.figure(figsize=(12, 6))
-#         plt.plot(train_df.index, y_train, label="Train Data")
-#         plt.plot(test_df.index, y_test, label="Test Data")
-#         plt.plot(test_df.index, y_pred, label="Predicted Data")
-#         plt.plot(future_dates, future_forecast, label="90-Day Forecast", linestyle="--")
-#         plt.legend()
-#         st.pyplot(plt)
-        
-#         # Display metrics
-#         st.write("Mean Squared Error:", mse)
-#         st.write("Mean Absolute Error:", mae)
-#         st.write("R-Squared:", r2)
-
-#     # If the data is None
-#     else:
-#         # Add a title to the stock prediction graph
-#         st.markdown("## **Stock Prediction**")
-
-#         # Add a message to the stock prediction graph
-#         st.markdown("### **No data available for the selected stock**")
-
-#     #####Stock Prediction Graph End#####
+#Stock Prediction Graphs
 
 if model == 1:
     stock_data, y_test, y_pred, future_dates, future_prices = get_randomforest(stock_ticker)
     
     st.markdown("## **Stock Prediction**")
     
-    # Create figure and axis objects
-    fig, ax = plt.subplots(figsize=(15, 7))
+    # Create Plotly figure
+    fig = go.Figure()
     
     # Get the dates corresponding to test data
     test_dates = stock_data.index[-len(y_test):]
     
-    # Plot all data
-    ax.plot(test_dates, y_test, label='Actual Prices', color='blue')
-    ax.plot(test_dates, y_pred, label='Predicted Prices', color='red')
-    ax.plot(future_dates, future_prices, label='Future Prices', color='green')
+    # Add traces for each dataset
+    fig.add_trace(go.Scatter(
+        x=test_dates, 
+        y=y_test, 
+        mode='lines', 
+        name='Actual Prices', 
+        line=dict(color='blue')
+    ))
     
-    # Customize plot
-    ax.set_xlabel('Date')
-    ax.set_ylabel('Price ($)')
-    ax.legend()
-    plt.xticks(rotation=45)
-    plt.tight_layout()
+    fig.add_trace(go.Scatter(
+        x=test_dates, 
+        y=y_pred, 
+        mode='lines', 
+        name='Predicted Prices', 
+        line=dict(color='red')
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=future_dates, 
+        y=future_prices, 
+        mode='lines', 
+        name='Future Prices', 
+        line=dict(color='green')
+    ))
+    
+    # Customize layout
+    fig.update_layout(
+        title='Stock Price Prediction',
+        xaxis_title='Date',
+        yaxis_title='Price ($)',
+        hovermode='closest',
+        legend_title_text='Price Types',
+    )
+    
+    # Rotate x-axis labels
+    fig.update_xaxes(tickangle=45)
     
     # Display in Streamlit
-    st.pyplot(fig)
-    
-    # Clear the figure
-    plt.close(fig)
-    
-    # Display metrics
-    st.markdown("### **Model Performance Metrics**")
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Mean Squared Error", f"{mean_squared_error(y_test, y_pred):.2f}")
-    col2.metric("Mean Absolute Error", f"{mean_absolute_error(y_test, y_pred):.2f}")
-    col3.metric("R-squared Score", f"{r2_score(y_test, y_pred):.2f}")
+    st.plotly_chart(fig)
     
 if model == 2:
     stock_data, y_test, y_pred, future_dates, future_prices = get_svm(stock_ticker)
     
     st.markdown("## **Stock Prediction**")
     
-    # Create figure and axis objects
-    fig, ax = plt.subplots(figsize=(15, 7))
+    # Create Plotly figure
+    fig = go.Figure()
     
     # Get the dates corresponding to test data
     test_dates = stock_data.index[-len(y_test):]
     
-    # Plot all data
-    ax.plot(test_dates, y_test, label='Actual Prices', color='blue')
-    ax.plot(test_dates, y_pred, label='Predicted Prices', color='red')
-    ax.plot(future_dates, future_prices, label='Future Prices', color='green')
+    # Add traces for each dataset
+    fig.add_trace(go.Scatter(
+        x=test_dates, 
+        y=y_test, 
+        mode='lines', 
+        name='Actual Prices', 
+        line=dict(color='blue')
+    ))
     
-    # Customize plot
-    ax.set_xlabel('Date')
-    ax.set_ylabel('Price ($)')
-    ax.legend()
-    plt.xticks(rotation=45)
-    plt.tight_layout()
+    fig.add_trace(go.Scatter(
+        x=test_dates, 
+        y=y_pred, 
+        mode='lines', 
+        name='Predicted Prices', 
+        line=dict(color='red')
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=future_dates, 
+        y=future_prices, 
+        mode='lines', 
+        name='Future Prices', 
+        line=dict(color='green')
+    ))
+    
+    # Customize layout
+    fig.update_layout(
+        title='Stock Price Prediction',
+        xaxis_title='Date',
+        yaxis_title='Price ($)',
+        hovermode='closest',
+        legend_title_text='Price Types',
+    )
+    
+    # Rotate x-axis labels
+    fig.update_xaxes(tickangle=45)
     
     # Display in Streamlit
-    st.pyplot(fig)
-    
-    # Clear the figure
-    plt.close(fig)
-    
-    # Display metrics
-    st.markdown("### **Model Performance Metrics**")
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Mean Squared Error", f"{mean_squared_error(y_test, y_pred):.2f}")
-    col2.metric("Mean Absolute Error", f"{mean_absolute_error(y_test, y_pred):.2f}")
-    col3.metric("R-squared Score", f"{r2_score(y_test, y_pred):.2f}")
+    st.plotly_chart(fig)
     
 if model == 3:
     stock_data, y_test, y_pred, future_dates, future_prices = get_dt(stock_ticker)
     
     st.markdown("## **Stock Prediction**")
     
-    # Create figure and axis objects
-    fig, ax = plt.subplots(figsize=(15, 7))
+    # Create Plotly figure
+    fig = go.Figure()
     
     # Get the dates corresponding to test data
     test_dates = stock_data.index[-len(y_test):]
     
-    # Plot all data
-    ax.plot(test_dates, y_test, label='Actual Prices', color='blue')
-    ax.plot(test_dates, y_pred, label='Predicted Prices', color='red')
-    ax.plot(future_dates, future_prices, label='Future Prices', color='green')
+    # Add traces for each dataset
+    fig.add_trace(go.Scatter(
+        x=test_dates, 
+        y=y_test, 
+        mode='lines', 
+        name='Actual Prices', 
+        line=dict(color='blue')
+    ))
     
-    # Customize plot
-    ax.set_xlabel('Date')
-    ax.set_ylabel('Price ($)')
-    ax.legend()
-    plt.xticks(rotation=45)
-    plt.tight_layout()
+    fig.add_trace(go.Scatter(
+        x=test_dates, 
+        y=y_pred, 
+        mode='lines', 
+        name='Predicted Prices', 
+        line=dict(color='red')
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=future_dates, 
+        y=future_prices, 
+        mode='lines', 
+        name='Future Prices', 
+        line=dict(color='green')
+    ))
+    
+    # Customize layout
+    fig.update_layout(
+        title='Stock Price Prediction',
+        xaxis_title='Date',
+        yaxis_title='Price ($)',
+        hovermode='closest',
+        legend_title_text='Price Types',
+    )
+    
+    # Rotate x-axis labels
+    fig.update_xaxes(tickangle=45)
     
     # Display in Streamlit
-    st.pyplot(fig)
+    st.plotly_chart(fig)
     
-    # Clear the figure
-    plt.close(fig)
-    
-    # Display metrics
-    st.markdown("### **Model Performance Metrics**")
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Mean Squared Error", f"{mean_squared_error(y_test, y_pred):.2f}")
-    col2.metric("Mean Absolute Error", f"{mean_absolute_error(y_test, y_pred):.2f}")
-    col3.metric("R-squared Score", f"{r2_score(y_test, y_pred):.2f}")
-
 if model == 4:
     stock_data, y_test, y_pred, future_dates, future_prices = get_knn(stock_ticker)
     
     st.markdown("## **Stock Prediction**")
     
-    # Create figure and axis objects
-    fig, ax = plt.subplots(figsize=(15, 7))
+    # Create Plotly figure
+    fig = go.Figure()
     
     # Get the dates corresponding to test data
     test_dates = stock_data.index[-len(y_test):]
     
-    # Plot all data
-    ax.plot(test_dates, y_test, label='Actual Prices', color='blue')
-    ax.plot(test_dates, y_pred, label='Predicted Prices', color='red')
-    ax.plot(future_dates, future_prices, label='Future Prices', color='green')
+    # Add traces for each dataset
+    fig.add_trace(go.Scatter(
+        x=test_dates, 
+        y=y_test, 
+        mode='lines', 
+        name='Actual Prices', 
+        line=dict(color='blue')
+    ))
     
-    # Customize plot
-    ax.set_xlabel('Date')
-    ax.set_ylabel('Price ($)')
-    ax.legend()
-    plt.xticks(rotation=45)
-    plt.tight_layout()
+    fig.add_trace(go.Scatter(
+        x=test_dates, 
+        y=y_pred, 
+        mode='lines', 
+        name='Predicted Prices', 
+        line=dict(color='red')
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=future_dates, 
+        y=future_prices, 
+        mode='lines', 
+        name='Future Prices', 
+        line=dict(color='green')
+    ))
+    
+    # Customize layout
+    fig.update_layout(
+        title='Stock Price Prediction',
+        xaxis_title='Date',
+        yaxis_title='Price ($)',
+        hovermode='closest',
+        legend_title_text='Price Types',
+    )
+    
+    # Rotate x-axis labels
+    fig.update_xaxes(tickangle=45)
     
     # Display in Streamlit
-    st.pyplot(fig)
-    
-    # Clear the figure
-    plt.close(fig)
-    
-    # Display metrics
-    st.markdown("### **Model Performance Metrics**")
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Mean Squared Error", f"{mean_squared_error(y_test, y_pred):.2f}")
-    col2.metric("Mean Absolute Error", f"{mean_absolute_error(y_test, y_pred):.2f}")
-    col3.metric("R-squared Score", f"{r2_score(y_test, y_pred):.2f}")
-
+    st.plotly_chart(fig)
 
 if model == 5:
     train_data, test_data, test_predictions, test_conf_int, future_dates, future_prices, future_conf_int = get_arima(stock_ticker)
@@ -392,80 +343,6 @@ if model == 5:
     plt.show()
     st.pyplot(fig)
     plt.close(fig)
-# if model == 5:    
-#     y_pred = gen_arima(stock_ticker)
-
-#     # Check if the data is not None
-#     if y_pred is not None:
-#         # Add a title to the stock prediction graph
-#         st.markdown("## **Stock Prediction**")
-
-#         # Create a plot for the stock prediction
-#         fig = go.Figure(
-#             data=[
-#                 go.Scatter(
-#                     x=y_pred.index,
-#                     y=y_pred,
-#                     name="Prediction",
-#                     mode="lines",
-#                     line=dict(color="blue"),
-#                 ),
-#             ]
-#         )
-
-#         # Customize the stock prediction graph
-#         fig.update_layout(xaxis_rangeslider_visible=False)
-
-#         # Use the native streamlit theme.
-#         st.plotly_chart(fig, use_container_width=True)
-
-#     # If the data is None
-#     else:
-#         # Add a title to the stock prediction graph
-#         st.markdown("## **Stock Prediction**")
-
-#         # Add a message to the stock prediction graph
-#         st.markdown("### **No data available for the selected stock**")
-
-#     #####Stock Prediction Graph End#####
-    
-# if model == 6:    
-#     actual_dates, actual_prices, predicted_prices = gen_lstm(stock_ticker)
-
-#     # Check if the data is not None
-#     if predicted_prices is not None:
-#         # Add a title to the stock prediction graph
-#         st.markdown("## **Stock Prediction**")
-
-#         fig = go.Figure(
-#             data=[
-#                 go.Scatter(
-#                     x=actual_dates, 
-#                     y=actual_prices.flatten(),
-#                     name="Actual Prices",
-#                     mode="lines",
-#                     line=dict(color="blue"),
-#                 ),
-#                 go.Scatter(
-#                     x=actual_dates,
-#                     y=predicted_prices.flatten(),  # Flatten the array to a 1D list
-#                     name="Predicted Prices",
-#                     mode="lines",
-#                     line=dict(color="orange"),
-#                 ),
-#                 ]
-#             )
-#         st.plotly_chart(fig)
-
-#     # If the data is None
-#     else:
-#         # Add a title to the stock prediction graph
-#         st.markdown("## **Stock Prediction**")
-
-#         # Add a message to the stock prediction graph
-#         st.markdown("### **No data available for the selected stock**")
-
-#     #####Stock Prediction Graph End#####
 
 if model == 6:
     y_test, y_pred, future_dates, future_prices, scaler = get_lstm(stock_ticker)
@@ -496,83 +373,6 @@ if model == 6:
     plt.show()
     st.pyplot(fig)
     plt.close(fig)
-    
-    
-# if model == 7:    
-#     actual_dates, actual_prices, predicted_prices = gen_gru(stock_ticker)
-
-#     # Check if the data is not None
-#     if predicted_prices is not None:
-#         # Add a title to the stock prediction graph
-#         st.markdown("## **Stock Prediction**")
-
-#         fig = go.Figure(
-#             data=[
-#                 go.Scatter(
-#                     x=actual_dates, 
-#                     y=actual_prices.flatten(),
-#                     name="Actual Prices",
-#                     mode="lines",
-#                     line=dict(color="blue"),
-#                 ),
-#                 go.Scatter(
-#                     x=actual_dates,
-#                     y=predicted_prices.flatten(),  # Flatten the array to a 1D list
-#                     name="Predicted Prices",
-#                     mode="lines",
-#                     line=dict(color="orange"),
-#                 ),
-#                 go.Scatter(
-#                     x=future_dates,
-#                     y=predicted_future_prices.flatten(),  # Flatten the array to a 1D list
-#                     name="Forecasted Prices",
-#                     mode="lines",
-#                     line=dict(color="orange"),
-#                 ),
-#                 ]
-#             )
-#         st.plotly_chart(fig)
-
-#     # If the data is None
-#     else:
-#         # Add a title to the stock prediction graph
-#         st.markdown("## **Stock Prediction**")
-
-#         # Add a message to the stock prediction graph
-#         st.markdown("### **No data available for the selected stock**")
-
-#     #####Stock Prediction Graph End#####
-
-# if model == 7 :    
-#     train_df, test_df, X_train, X_test, y_train, y_test, y_pred, future_dates, future_forecast, mse, mae, r2 = gen_gru(stock_ticker)
-
-#     # Check if the data is not None
-#     if X_train is not None and (future_forecast >= 0).all() and (y_pred >= 0).all():
-#         # Add a title to the stock prediction graph
-#         st.markdown("## **Stock Prediction**")
-#         # Plot results
-#         plt.figure(figsize=(12, 6))
-#         plt.plot(train_df.index, y_train, label="Train Data")
-#         plt.plot(test_df.index, y_test, label="Test Data")
-#         plt.plot(test_df.index, y_pred, label="Predicted Data")
-#         plt.plot(future_dates, future_forecast, label="90-Day Forecast", linestyle="--")
-#         plt.legend()
-#         st.pyplot(plt)
-        
-#         # Display metrics
-#         st.write("Mean Squared Error:", mse)
-#         st.write("Mean Absolute Error:", mae)
-#         st.write("R-Squared:", r2)
-
-#     # If the data is None
-#     else:
-#         # Add a title to the stock prediction graph
-#         st.markdown("## **Stock Prediction**")
-
-#         # Add a message to the stock prediction graph
-#         st.markdown("### **No data available for the selected stock**")
-
-#     #####Stock Prediction Graph End#####
 
 if model == 7:
     stock_data, y_test, y_pred, future_dates, future_prices = get_gru(stock_ticker)
@@ -603,13 +403,6 @@ if model == 7:
     # Clear the figure
     plt.close(fig)
     
-    # Display metrics
-    st.markdown("### **Model Performance Metrics**")
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Mean Squared Error", f"{mean_squared_error(y_test, y_pred):.2f}")
-    col2.metric("Mean Absolute Error", f"{mean_absolute_error(y_test, y_pred):.2f}")
-    col3.metric("R-squared Score", f"{r2_score(y_test, y_pred):.2f}")
-
 if model == 8:
     
     stock_data, test_data, test_predictions, test_index, future_dates, future_predictions, price_scaler = get_xgboost(stock_ticker)
@@ -618,8 +411,6 @@ if model == 8:
     
     # Create figure and axis objects
     fig, ax = plt.subplots(figsize=(15, 7))
-    
-    #plt.figure(figsize=(15, 7))
     
     # Plot historical data
     ax.plot(stock_data.index, stock_data['Close'], label='Historical Price', color='gray', alpha=0.5)
@@ -653,27 +444,6 @@ if model == 8:
     
     st.pyplot(fig)
     plt.close(fig)
-
-if model == 3 :    
-    train_index, test_index, X_train, X_test, y_train, y_test, y_pred, future_dates, future_forecast, mse, mae, r2 = get_dt(stock_ticker)
-
-    # Check if the data is not None
-    if X_train is not None and (future_forecast >= 0).all() and (y_pred >= 0).all():
-        # Add a title to the stock prediction graph
-        st.markdown("## **Stock Prediction**")
-        # Plot results
-        plt.figure(figsize=(12, 6))
-        plt.plot(train_index[:len(y_train)], y_train, label="Train Data", color="Blue")
-        plt.plot(test_index[:len(y_test)], y_test, label="Test Data", color = "Red")
-        plt.plot(test_index[:len(y_pred)], y_pred, label="Predicted Data", color = "Black")
-        plt.plot(future_dates, future_forecast, label="90-Day Forecast", linestyle="--")
-        plt.legend()
-        st.pyplot(plt)
-        
-        # Display metrics
-        st.write("Mean Squared Error:", mse)
-        st.write("Mean Absolute Error:", mae)
-        st.write("R-squared:", r2)
 
 
 

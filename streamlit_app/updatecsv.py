@@ -1,16 +1,17 @@
+#imports
 import pandas as pd
 
+#function to update csv conditionally
 def update_to_csv(file, ticker, mae, mape, mse, rmse, r2):
-    #file = "D:/SAMLFRFM/notebooks/model_metrics.csv"
-    
-    # Read the existing metrics
+
+    # Read the existing metrics of the particular model
     existing_metrics = pd.read_csv(file)
     
-    # Check if the model exists
+    # Check if the stock exists
     stock_exists = existing_metrics["Stock"].str.contains(ticker).any()
     
     if stock_exists:
-        # Get the row corresponding to the model
+        # Get the row corresponding to the stock
         previous_metrics = existing_metrics[existing_metrics["Stock"] == ticker].iloc[0]
         
         # Check if the RMSE is better
@@ -34,7 +35,7 @@ def update_to_csv(file, ticker, mae, mape, mse, rmse, r2):
             # Save the updated metrics to the file
             updated_metrics.to_csv(file, index=False)
     else:
-        # If the model does not exist, add a new row
+        # If the stock does not exist, add a new row
         new_metrics = pd.DataFrame({
             "Stock": [ticker],
             "MAE": [mae],

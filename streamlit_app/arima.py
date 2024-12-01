@@ -1,7 +1,6 @@
+#import libraries
 import yfinance as yf
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 from datetime import timedelta
 from pmdarima import auto_arima
 from sklearn.metrics import mean_squared_error, mean_absolute_error, root_mean_squared_error, r2_score
@@ -36,7 +35,6 @@ def train_auto_arima_model(train_data):
                       suppress_warnings=True,
                       stepwise=True)
     
-    print(f"\nBest ARIMA model parameters:")
     print(f"ARIMA order (p,d,q): {model.order}")
     print(f"Seasonal order (P,D,Q,s): {model.seasonal_order}")
     return model
@@ -59,50 +57,31 @@ def evaluate_model(y_test, y_pred, ticker):
     rmse = root_mean_squared_error(y_test, y_pred)
     mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100
     r2 = r2_score(y_test, y_pred)
-    #print(f"Mean Squared Error (MSE): {mse}")
-    #print(f"Mean Absolute Error (MAE): {mae}")
+    
     update_to_csv("D:/SAMLFRFM/notebooks/metrics/arima.csv",ticker, mae,mape, mse, rmse, r2)
 
-# Example usage
-#if __name__ == "__main__":
+#function to run
 def get_arima(ticker):
-    #ticker = 'AAPL'
+    
     start_date = '2020-01-01'
     end_date = '2024-11-25'
     
     # Fetch and prepare data
-    #print("Fetching stock data...")
     stock_data = fetch_stock_data(ticker, start_date, end_date)
     train_data, test_data = prepare_data(stock_data)
     
     # Train model
-    #print("\nFinding optimal ARIMA parameters...")
     model = train_auto_arima_model(train_data)
     
     # Make predictions for test period with confidence intervals
-    #print("\nMaking predictions...")
     test_predictions, test_conf_int = make_predictions(model, len(test_data))
     
     # Evaluate model
     evaluate_model(test_data, test_predictions, ticker)
     
     # Predict future prices with confidence intervals
-    #print("\nPredicting future prices...")
     last_date = stock_data.index[-1].to_pydatetime().replace(tzinfo=None)
     future_dates, future_prices, future_conf_int = predict_future_prices(model, last_date, days=90)
     
     # Plot results
     return train_data, test_data, test_predictions, test_conf_int, future_dates, future_prices, future_conf_int
-    
-    # Print sample of future predictions with confidence intervals
-    #print("\nSample of future predictions with 95% confidence intervals:")
-    # for i in range(2, 6):
-    #     date = future_dates[i]
-    #     price = future_prices[i]
-    #     lower_ci = future_conf_int[i, 0]
-    #     upper_ci = future_conf_int[i, 1]
-    #     #print(f"{date.strftime('%Y-%m-%d')}: ${price:.2f} (95% CI: ${lower_ci:.2f} - ${upper_ci:.2f})")
-    
-    # print(f"\nFinal prediction for {future_dates[-1].strftime('%Y-%m-%d')}:")
-    # print(f"Price: ${future_prices[-1]:.2f}")
-    # print(f"95% Confidence Interval: ${future_conf_int[-1, 0]:.2f} - ${future_conf_int[-1, 1]:.2f}")

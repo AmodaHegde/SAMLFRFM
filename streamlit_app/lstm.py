@@ -1,3 +1,5 @@
+#imports
+
 from datetime import timedelta
 import yfinance as yf
 import numpy as np
@@ -51,8 +53,7 @@ def train_lstm_model(X, y):
     y_pred = model.predict(X_test)
     return model, X_train, X_test, y_train, y_test, y_pred
 
-# Step 4: Evaluate model performance
-    
+# Step 4: Evaluate model performance   
 def evaluate_model(y_test, y_pred, scaler, ticker):
     y_test = scaler.inverse_transform(y_test.reshape(-1, 1))
     y_pred = scaler.inverse_transform(y_pred)
@@ -61,8 +62,7 @@ def evaluate_model(y_test, y_pred, scaler, ticker):
     rmse = root_mean_squared_error(y_test, y_pred)
     mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100
     r2 = r2_score(y_test, y_pred)
-    #print(f"Mean Squared Error (MSE): {mse}")
-    #print(f"Mean Absolute Error (MAE): {mae}")
+    
     update_to_csv("D:/SAMLFRFM/notebooks/metrics/lstm.csv",ticker,mae,mape, mse, rmse, r2)
 
 # Step 5: Predict future prices
@@ -87,9 +87,7 @@ def predict_future_prices(model, last_known_data, last_date, scaler, lag=5, days
     future_dates = [last_date + timedelta(days=i) for i in range(1, days + 1)]
     return future_dates, future_prices
 
-# Step 6: Plot predictions
-
-# Step 6 (New): Plot combined results
+# Step 6: Plot results
 def plot_combined_graph(y_test, y_pred, future_dates, future_prices, scaler):
     # Rescale the predictions and actual values to their original scale
     y_test_rescaled = scaler.inverse_transform(y_test.reshape(-1, 1))
@@ -111,10 +109,9 @@ def plot_combined_graph(y_test, y_pred, future_dates, future_prices, scaler):
     plt.legend()
     plt.show()
 
-# Example usage
-#if __name__ == "__main__":
+#runner function
 def get_lstm(ticker):
-    #ticker = 'TSLA'  # Example stock ticker
+    
     start_date = '2020-01-01'
     end_date = '2024-11-25'
     
@@ -128,14 +125,5 @@ def get_lstm(ticker):
     last_known_data = X[-1]  # Last feature set
     last_date = stock_data.index[-1].to_pydatetime().replace(tzinfo=None)
     future_dates, future_prices = predict_future_prices(model, last_known_data, last_date, scaler, lag=5, days=90)
-    
-    # Plot results
-    #plot_results1(y_test, y_pred, scaler)
-    #plot_results2(future_dates, future_prices)
-    #plot_combined_graph(y_test, y_pred, future_dates, future_prices, scaler)
-    
-    # Print future prices
-    print(future_dates[2:6], future_prices[2:6])
-    print(f"The predicted stock price for {future_dates[-1].strftime('%Y-%m-%d')} is ${future_prices[-1]:.2f}")
     
     return y_test, y_pred, future_dates, future_prices, scaler

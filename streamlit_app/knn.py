@@ -1,13 +1,12 @@
+#imports
+
 from datetime import timedelta
 import yfinance as yf
 import numpy as np
-import pandas as pd
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error, root_mean_squared_error, r2_score
-import matplotlib.pyplot as plt
-
 from updatecsv import update_to_csv
 
 # Step 1: Fetch data from Yahoo Finance
@@ -53,8 +52,7 @@ def evaluate_model(y_test, y_pred, ticker):
     rmse = root_mean_squared_error(y_test, y_pred)
     mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100
     r2 = r2_score(y_test, y_pred)
-    #print(f"Mean Squared Error (MSE): {mse}")
-    #print(f"Mean Absolute Error (MAE): {mae}")
+    
     update_to_csv("D:/SAMLFRFM/notebooks/metrics/knn.csv",ticker, mae,mape, mse, rmse, r2)
 
 # Step 5: Predict future prices
@@ -75,10 +73,9 @@ def predict_future_prices(model, scaler, last_known_data, last_date, days=90):
     future_dates = [last_date + timedelta(days=i) for i in range(1, days + 1)]
     return future_dates, future_prices
 
-# Example usage
-#if __name__ == "__main__":
+#runner function
 def get_knn(ticker):
-    #ticker = 'AAPL'  # Example stock ticker
+    
     start_date = '2020-01-01'
     end_date = '2024-11-25'
 
@@ -97,9 +94,3 @@ def get_knn(ticker):
 
     # Plot results
     return stock_data, y_test, y_pred, future_dates, future_prices
-
-    # Print future predictions
-    # print(f"The predicted stock price for {future_dates[-1].strftime('%Y-%m-%d')} is ${future_prices[-1]:.2f}")
-    # print("Sample future predictions:")
-    # for date, price in zip(future_dates[:5], future_prices[:5]):
-    #     print(f"Date: {date.strftime('%Y-%m-%d')} | Predicted Price: ${price:.2f}")

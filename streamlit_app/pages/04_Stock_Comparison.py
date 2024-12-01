@@ -1,9 +1,9 @@
+#imports
+
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-
 from helper import *
 
 st.set_page_config(
@@ -13,17 +13,6 @@ st.set_page_config(
 df = pd.read_csv("D:/SAMLFRFM/notebooks/model_metrics.csv")
 
 st.markdown("# **Error metrics of models**")
-
-# fig, ax = plt.subplots(figsize=(10, 6))
-
-# rf = df[df['Model']=="Random Forest"]
-
-# rf.boxplot()
-# plt.title('Distribution of RMSE for Different Models', fontsize=14)
-# plt.xlabel('Models', fontsize=12)
-# plt.ylabel('RMSE', fontsize=12)
-# plt.grid(False)
-# st.pyplot(fig)
 
 fig1, ax1 = plt.subplots(figsize=(10, 6))
 sns.barplot(x='Model', y='RMSE', data=df, palette='viridis', ax=ax1)
