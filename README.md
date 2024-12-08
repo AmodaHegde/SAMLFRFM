@@ -13,12 +13,19 @@ git clone https://github.com/AmodaHegde/SAMLFRFM.git
 pip install -r requirements.txt
 ```
 
-3. Change directory
+3. Change paths:
+   1. 03_Model_Metrics.py -> Change file paths
+   2. 04_Stock_Comparison.py -> Change CSV file path
+   3. 05_Normality_Testing.py -> Change file paths
+   4. 06_Statistical_Testing.py -> Change file paths
+   5. 07_Post_Hoc_Analysis.py -> Change file paths
+
+4.. Change directory
 ```bash
 cd streamlit_app
 ```
 
-4. Run the app
+5. Run the app
 
 ```bash
 streamlit run Main.py
